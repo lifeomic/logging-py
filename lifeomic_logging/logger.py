@@ -101,14 +101,14 @@ def get_request_context(lambda_context: dict) -> dict:
     dict
         A dict of important properties for the request
     """
-    if lambda_context is None:
+    if not lambda_context:
         return None
 
     client_context = getattr(lambda_context, "client_context", None)
     if not client_context:
         return None
 
-    custom = getattr(client_context, "custom", {})
+    custom = getattr(client_context, "custom", None)
     if not custom:
         return None
 
@@ -128,12 +128,12 @@ def get_request_context(lambda_context: dict) -> dict:
 def _logger(name: str, handler, level: int = INFO) -> Logger:
     log = getLogger(name)
 
-    if not len(log.handlers):
+    if not log.handlers:
         textformatter = _JSONFormatter()
         handler.setFormatter(textformatter)
         log.addHandler(handler)
 
-    if not len(log.filters):
+    if not log.filters:
         log.addFilter(_LoggingContextFilter())
 
     log.setLevel(level)

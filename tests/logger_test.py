@@ -150,3 +150,18 @@ class LoggerTest(unittest.TestCase):
             "account": "foo",
             "error": True
         })
+
+    def test_info_with_args(self):
+        with scoped_logger("test_info_with_args", stream=sys.stderr) as logger:
+            logger.info("message %s %d", "foo", 1)
+
+        parsed = json.loads(self.mock_stderr.getvalue())
+        self.assertDictEqual(parsed, {
+            "hostname": "hostname",
+            "level": 30,
+            "msg": "message foo 1",
+            "name": "test_info_with_args",
+            "pid": 1,
+            "severity": "INFO",
+            "time": "1901-12-21T00:00:00"
+        })

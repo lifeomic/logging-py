@@ -198,7 +198,7 @@ class _JSONFormatter(Formatter):
             for key, value in record.msg.items():
                 fields.append((key, value))
         else:
-            fields.append(("msg", str(record.msg)))
+            fields.append(("msg", str(record.msg) % record.args))
 
         fields.append(("severity", record.levelname))
         # Python logging levels are 10 less than what Bunyan uses

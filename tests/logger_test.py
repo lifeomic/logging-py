@@ -81,10 +81,11 @@ class LoggerTest(unittest.TestCase):
             try:
                 raise TypeError("error message")
             except Exception as e:
-                logger.exception(e)
+                logger.exception("Unknown Error")
 
         parsed = json.loads(self.mock_stderr.getvalue())
         self.assertEquals(parsed.get("severity"), "ERROR")
+        self.assertEquals(parsed.get("msg"), "Unknown Error")
         self.assertIsNotNone(parsed.get("err").get("message"))
 
     def test_extra(self):
@@ -149,4 +150,19 @@ class LoggerTest(unittest.TestCase):
             "time": "1901-12-21T00:00:00",
             "account": "foo",
             "error": True
+        })
+
+    def test_info_with_args(self):
+        with scoped_logger("test_info_with_args", stream=sys.stderr) as logger:
+            logger.info("message %s %d", "foo", 1)
+
+        parsed = json.loads(self.mock_stderr.getvalue())
+        self.assertDictEqual(parsed, {
+            "hostname": "hostname",
+            "level": 30,
+            "msg": "message foo 1",
+            "name": "test_info_with_args",
+            "pid": 1,
+            "severity": "INFO",
+            "time": "1901-12-21T00:00:00"
         })

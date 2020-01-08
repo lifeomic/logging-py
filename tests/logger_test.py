@@ -81,10 +81,11 @@ class LoggerTest(unittest.TestCase):
             try:
                 raise TypeError("error message")
             except Exception as e:
-                logger.exception(e)
+                logger.exception("Unknown Error")
 
         parsed = json.loads(self.mock_stderr.getvalue())
         self.assertEquals(parsed.get("severity"), "ERROR")
+        self.assertEquals(parsed.get("msg"), "Unknown Error")
         self.assertIsNotNone(parsed.get("err").get("message"))
 
     def test_extra(self):

@@ -3,7 +3,6 @@
 ## Project Status
 
 ![GitHub](https://img.shields.io/github/license/lifeomic/logging-py.svg?style=for-the-badge)
-![Travis (.org) branch](https://img.shields.io/travis/lifeomic/logging-py/master.svg?style=for-the-badge)
 ![PyPI status](https://img.shields.io/pypi/status/lifeomic_logging.svg?style=for-the-badge)
 ![Downloads](https://img.shields.io/pypi/dw/lifeomic_logging?style=for-the-badge)
 ![GitHub release](https://img.shields.io/github/release/lifeomic/logging-py.svg?style=for-the-badge)

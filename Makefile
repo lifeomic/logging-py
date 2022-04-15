@@ -8,8 +8,6 @@ PYTHON := env PYTHONPATH=$(PYTHONPATH) $(VENV)/bin/python
 BLACK := env PYTHONPATH=$(PYTHONPATH) $(VENV)/bin/black
 PIP := $(VENV)/bin/pip3
 VERSION := $(shell python -c "from $(SRC).version import __version__; print(__version__)")
-PUBLISHED_VERSIONS := $(shell $(PIP) index versions $(SRC))
-IS_VERSION_PUBLISHED = $(shell grep -q $(VERSION) <<< "$(PUBLISHED_VERSIONS)"; echo $$?)
 REQUIREMENTS := -r requirements-dev.txt
 
 default: clean test
@@ -38,13 +36,7 @@ package: venv
 	$(PYTHON) setup.py sdist bdist_wheel
 
 deploy: venv
-	# TODO: remove debug
-	$(info output of pip index versions == $(shell $(PIP) index versions $(SRC)))
-	$(info current version == $(VERSION))
-	$(info already published versions == "$(PUBLISHED_VERSIONS)")
-	$(info output of grep == $(shell grep $(VERSION) <<< "$(PUBLISHED_VERSIONS)"; echo $$?))
-	# TODO: end debug
-	if [ $(IS_VERSION_PUBLISHED) -eq 0 ]; then \
+	if [[ "$(shell $(PIP) index versions $(SRC))" == *$(VERSION)* ]]; then \
 	  echo "Version $(VERSION) is already published, exiting"; \
 	else \
 	  echo "Now publishing version $(VERSION)" && $(PYTHON) -m twine upload dist/*; \

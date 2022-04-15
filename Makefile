@@ -38,8 +38,13 @@ package: venv
 	$(PYTHON) setup.py sdist bdist_wheel
 
 deploy: venv
+	# TODO: remove debug
+	$(info current version == $(VERSION))
+	$(info already published versions == "$(PUBLISHED_VERSIONS)")
+	grep $(VERSION) <<< "$(PUBLISHED_VERSIONS)"
+	# TODO: end debug
 	if [ $(IS_VERSION_PUBLISHED) -eq 0 ]; then \
-	  echo "Versioned $(VERSION) is already published, exiting"; \
+	  echo "Version $(VERSION) is already published, exiting"; \
 	else \
 	  echo "Now publishing version $(VERSION)" && $(PYTHON) -m twine upload dist/*; \
 	fi

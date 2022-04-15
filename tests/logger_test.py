@@ -166,3 +166,20 @@ class LoggerTest(unittest.TestCase):
             "severity": "INFO",
             "time": "1901-12-21T00:00:00"
         })
+
+    def test_info_with_no_args(self):
+        with scoped_logger("test_info_with_no_args", stream=sys.stderr) as logger:
+            # Since no string format arguments are provided, the logger should treat
+            # `%s` and `%d` as literal values, not string placeholders.
+            logger.info("message %s %d")
+
+        parsed = json.loads(self.mock_stderr.getvalue())
+        self.assertDictEqual(parsed, {
+            "hostname": "hostname",
+            "level": 30,
+            "msg": "message %s %d",
+            "name": "test_info_with_no_args",
+            "pid": 1,
+            "severity": "INFO",
+            "time": "1901-12-21T00:00:00"
+        })

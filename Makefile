@@ -39,9 +39,10 @@ package: venv
 
 deploy: venv
 	# TODO: remove debug
+	$(info output of pip index versions == $(shell $(PIP) index versions $(SRC)))
 	$(info current version == $(VERSION))
 	$(info already published versions == "$(PUBLISHED_VERSIONS)")
-	grep $(VERSION) <<< "$(PUBLISHED_VERSIONS)"
+	$(info output of grep == $(shell grep $(VERSION) <<< "$(PUBLISHED_VERSIONS)"; echo $$?))
 	# TODO: end debug
 	if [ $(IS_VERSION_PUBLISHED) -eq 0 ]; then \
 	  echo "Version $(VERSION) is already published, exiting"; \

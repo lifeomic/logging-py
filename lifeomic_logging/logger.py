@@ -7,6 +7,7 @@ from collections import OrderedDict
 from logging import Formatter, Filter, StreamHandler, getLogger, INFO, Logger
 from json import dumps
 from contextlib import contextmanager
+from typing import Generator, Optional
 
 thread_local_storage = threading.local()
 
@@ -36,14 +37,46 @@ _RESERVED_ATTRS = (
 )
 
 
+class JsonLogger(Logger):
+    """
+    A logger that logs in JSON format. Supports creating child loggers with
+    expanded context, similar to the NodeJS Bunyan logger.
+    """
+
+    def __init__(
+        self,
+        name: str,
+        context: Optional[dict] = None,
+        level: int = INFO,
+    ):
+        super().__init__(name, level)
+        self.context = context if context is not None else {}
+        handler = StreamHandler()
+        handler.setFormatter(_JSONFormatter())
+        self.addHandler(handler)
+
+    def child(self, additional_context: dict):
+        child_context = {**self.context, **additional_context}
+        child_logger = self.__class__(
+            name=self.name, level=self.level, context=child_context
+        )
+        return child_logger
+
+    def _log(self, level, msg, args, exc_info=None, extra=None, stack_info=False):
+        if extra is None:
+            extra = {}
+        extra.update(self.context)
+        super()._log(level, msg, args, exc_info, extra, stack_info)
+
+
 @contextmanager
 def scoped_logger(
     logname: str,
-    normal_context: dict = None,
-    error_context: dict = None,
+    normal_context: Optional[dict] = None,
+    error_context: Optional[dict] = None,
     stream=None,
     level: int = INFO,
-) -> Logger:
+) -> Generator[Logger, None, None]:
     """Creates a scopped logger
 
     Parameters
@@ -84,7 +117,7 @@ def scoped_logger(
         )
 
 
-def get_request_context(lambda_context: dict) -> dict:
+def get_request_context(lambda_context: dict) -> Optional[dict]:
     """Helper method to retrieve our most pertinent header information.
         These are stored from the passed in lambda_context
         object. Please see

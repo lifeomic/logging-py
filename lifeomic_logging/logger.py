@@ -261,7 +261,21 @@ class _JSONFormatter(Formatter):
             if key not in _RESERVED_ATTRS and not (
                 hasattr(key, "startswith") and key.startswith("_")
             ):
-                fields.append((key, value))
+                try:
+                    dumps(value)
+                    fields.append((key, value))
+                except Exception:
+                    # Try model_dump if available (e.g., Pydantic v2 models)
+                    model_dump = getattr(value, "model_dump", None)
+                    if callable(model_dump):
+                        try:
+                            dumped_value = model_dump()
+                            dumps(dumped_value)
+                            fields.append((key, dumped_value))
+                        except Exception:
+                            fields.append((key, str(value)))
+                    else:
+                        fields.append((key, str(value)))
 
         return OrderedDict(fields)
 

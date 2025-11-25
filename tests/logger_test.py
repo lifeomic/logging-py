@@ -253,3 +253,59 @@ class LoggerTest(unittest.TestCase):
         self.assertEquals(parsed["msg"], "Unknown Error")
         self.assertIsNotNone(parsed["err"].get("message"))
         self.assertEquals(parsed["parentContext"], True)
+
+    def test_non_json_serializable_value_without_model_dump(self):
+        """Non-JSON-serializable values without model_dump should fall back to str()"""
+
+        class NonSerializable:
+            def __str__(self):
+                return "custom_str_representation"
+
+        with scoped_logger(
+            "test_non_serializable", stream=sys.stderr
+        ) as logger:
+            logger.info("message", extra={"custom_obj": NonSerializable()})
+
+        parsed = json.loads(self.mock_stderr.getvalue())
+        self.assertEqual(parsed["custom_obj"], "custom_str_representation")
+
+    def test_non_json_serializable_value_with_working_model_dump(self):
+        """Non-JSON-serializable values with model_dump should use the dumped value"""
+
+        class PydanticLikeModel:
+            def __init__(self, data):
+                self.data = data
+
+            def model_dump(self):
+                return {"dumped_data": self.data}
+
+            def __str__(self):
+                return "should_not_use_this"
+
+        with scoped_logger(
+            "test_model_dump", stream=sys.stderr
+        ) as logger:
+            logger.info("message", extra={"model": PydanticLikeModel("test_value")})
+
+        parsed = json.loads(self.mock_stderr.getvalue())
+        self.assertEqual(parsed["model"], {"dumped_data": "test_value"})
+
+    def test_non_json_serializable_value_with_failing_model_dump(self):
+        """Non-JSON-serializable values with failing model_dump should fall back to str()"""
+
+        class BadModelDump:
+            def model_dump(self):
+                # Return something that's not JSON serializable
+                return BadModelDump()
+
+            def __str__(self):
+                return "fallback_str_representation"
+
+        with scoped_logger(
+            "test_failing_model_dump", stream=sys.stderr
+        ) as logger:
+            logger.info("message", extra={"bad_model": BadModelDump()})
+
+        parsed = json.loads(self.mock_stderr.getvalue())
+        self.assertEqual(parsed["bad_model"], "fallback_str_representation")
+

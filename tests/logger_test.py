@@ -93,8 +93,8 @@ class LoggerTest(unittest.TestCase):
                 logger.exception("Unknown Error")
 
         parsed = json.loads(self.mock_stderr.getvalue())
-        self.assertEquals(parsed.get("severity"), "ERROR")
-        self.assertEquals(parsed.get("msg"), "Unknown Error")
+        self.assertEqual(parsed.get("severity"), "ERROR")
+        self.assertEqual(parsed.get("msg"), "Unknown Error")
         self.assertIsNotNone(parsed.get("err").get("message"))
 
     def test_extra(self):
@@ -249,10 +249,10 @@ class LoggerTest(unittest.TestCase):
             logger.exception("Unknown Error")
 
         parsed = json.loads(self.mock_stderr.getvalue())
-        self.assertEquals(parsed["severity"], "ERROR")
-        self.assertEquals(parsed["msg"], "Unknown Error")
+        self.assertEqual(parsed["severity"], "ERROR")
+        self.assertEqual(parsed["msg"], "Unknown Error")
         self.assertIsNotNone(parsed["err"].get("message"))
-        self.assertEquals(parsed["parentContext"], True)
+        self.assertEqual(parsed["parentContext"], True)
 
     def test_non_json_serializable_value_without_model_dump(self):
         """Non-JSON-serializable values without model_dump should fall back to str()"""

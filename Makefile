@@ -2,7 +2,6 @@ SHELL := /bin/bash
 SRC := lifeomic_logging
 PYTHONPATH := .
 VENV := .venv
-NOSE := env PYTHONPATH=$(PYTHONPATH) $(VENV)/bin/nosetests
 FLAKE8 := env PYTHONPATH=$(PYTHONPATH) $(VENV)/bin/flake8
 PYTHON := env PYTHONPATH=$(PYTHONPATH) $(VENV)/bin/python
 BLACK := env PYTHONPATH=$(PYTHONPATH) $(VENV)/bin/black
@@ -30,7 +29,7 @@ format: venv
 	$(BLACK) $(SRC)
 
 test: lint
-	$(NOSE) -v tests
+	env PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m unittest discover -v -s tests -p '*_test.py'
 
 package: venv
 	$(PYTHON) setup.py sdist bdist_wheel

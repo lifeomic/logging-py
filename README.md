@@ -11,8 +11,7 @@
 
 ### Dependencies
 
-- [Python 3](https://www.python.org/download/releases/3.0/) version >= 3.6 and <= 3.9.25
-  (contributions welcome to bring this up to 3.13+)
+- [Python 3](https://www.python.org/download/releases/3.0/) version >= 3.13
 
 ### Getting the Source
 

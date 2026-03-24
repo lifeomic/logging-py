@@ -27,6 +27,7 @@ setup(
     author_email="development@lifeomic.com",
     packages=find_packages(exclude=("tests",)),
     include_package_data=True,
+    python_requires=">=3.13",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: MIT License",
@@ -35,7 +36,7 @@ setup(
         "Natural Language :: English",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.13",
         "Topic :: Utilities",
     ],
 )
